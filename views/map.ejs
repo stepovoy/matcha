@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom Markers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 16,
+          center: new google.maps.LatLng(<%- user.local.position %>),
+          mapTypeId: 'roadmap'
+        });
+
+        <% for (var i = 0; i < people.length; i++) { %>
+          <% if (people[i].local.avatar && people[i].local.position) { %>
+              var icon = {
+                url: '<%- people[i].local.avatar %>',
+                scaledSize: new google.maps.Size(50, 50), // scaled size
+              }
+              var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(<%- people[i].local.position %>),
+                icon: icon,
+                map: map
+              });
+              google.maps.event.addDomListener(marker, 'click', function() {
+                  window.location.href = '<%- people[i].local.login %>';
+              });
+          <% } %>
+        <% } %>
+        // var icon = {
+        //   url: '<%- user.local.avatar %>',
+        //   scaledSize: new google.maps.Size(50, 50), // scaled size
+        // }
+        // var marker = new google.maps.Marker({
+        //   position: new google.maps.LatLng(<%- user.local.position %>),
+        //   icon: icon,
+        //   map: map
+        // });
+        // google.maps.event.addDomListener(marker, 'click', function() {
+        //     window.location.href = '<%- user.local.login %>';
+        // });
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHaj67ZsG8UrjwBp1RH9isMQdUK8TS97Y&callback=initMap">
+    </script>
+  </body>
+</html>

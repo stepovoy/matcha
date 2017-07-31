@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body         { /*padding-top:80px;*/ word-wrap:break-word; }
+        img          { padding: 1px; margin-left: -4px;}
+        #chat        { width: 100%; }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <!-- Show profile info -->
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="well">
+                <h2><span class="fa fa-user"></span> <%= person.local.name %>'s Profile:</h2>
+                <p>
+                    <a href="/chat/<%= person.local.login %>"><input id="chat" type="<%= ((liked === "Unlike") && (likedYou === "True")) ? "button" : "hidden" %>" class="btn btn-lg" value="Chat now!"></a>
+                    <form name="like">
+                    <input type="hidden" name="person" value="<%= person.local.login %>"/>
+                    <button name="press" type="submit" class="btn btn-warning btn-lg liked">
+                    <%- liked %>
+                    </button>
+                    <strong><%= (new Date() - person.local.online < 30*1000) ? "Online" : 
+                    (new Date() - person.local.online < 3600*1000) ? "Was online less then an hour ago" : 
+                    (new Date() - person.local.online < 24*3600*1000) ? "Was online less than a day ago" : 
+                    "Was online at " + person.local.online.toDateString() %></strong><br>
+                    </form>
+                    <script>
+                        $("form").submit(function(e) {
+                             
+                            e.preventDefault();
+                            var like = document.forms["like"];
+                            var person = like.elements[0].value;
+                             
+                            $.ajax({
+                                type: "POST",
+                                url: "/like",
+                                data: JSON.stringify({person: person}),
+                                dataType: "json",
+                                contentType: "application/json",
+                                success: function(data){
+                                    $(".liked").html(data['liked']);
+                                    var type = ($(".liked").html() === "Like") ? "hidden" : "button";
+                                    $("#chat").attr("type", type);
+                                },
+                            });
+                        });
+                    </script>
+                    <img src="
+                    <%- person.local.avatar ? person.local.avatar : 'uploads/default.jpg' %>
+                    " width=100% /><br>
+                    <img src="
+                    <%- person.local.img1 ? person.local.img1 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <img src="
+                    <%- person.local.img2 ? person.local.img2 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <img src="
+                    <%- person.local.img3 ? person.local.img3 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <img src="
+                    <%- person.local.img4 ? person.local.img4 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <!-- <strong>Login</strong>: <%= person.local.login %><br>
+                    <strong>Full Name</strong>: <%= person.local.name %><br>
+                    <strong>Gender</strong>: <%= person.local.gender %><br>
+                    <strong>Sexual preferences</strong>: <%= person.local.orient %><br>
+                    <strong>Age</strong>: <%= person.local.age %><br>
+                    <strong>Age gap</strong>: <%= person.local.agegap %><br>
+                    <strong>Interests</strong>: <%= person.local.tags %><br>  
+                    <strong>About me</strong>: <%= person.local.about %><br>
+                    <strong>Rating</strong>: <%= person.local.rating %><br> -->
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-sm-4">
+            <div class="well">
+                <strong>Login</strong>: <%= person.local.login %><br>
+                <strong>Full Name</strong>: <%= person.local.name %><br>
+                <strong>Gender</strong>: <%= person.local.gender %><br>
+                <strong>Sexual preferences</strong>: <%= person.local.orient %><br>
+                <strong>Age</strong>: <%= person.local.age %><br>
+                <strong>Age gap</strong>: <%= person.local.agegap %><br>
+                <strong>Interests</strong>: <%= person.local.tags %><br>  
+                <strong>About me</strong>: <%= person.local.about %><br>
+                <strong>Rating</strong>: <%= person.local.likes.length / person.local.visits.length * 100 %>%<br>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <p><i>42 School | <b>Matcha</b> Project by <b>astepovy</b> &copy; 2017</i></p>
+    </div>
+
+</div>
+</body>
+</html>

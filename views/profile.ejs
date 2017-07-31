@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body         { /*padding-top:80px;*/ word-wrap:break-word; }
+        img          { padding: 1px; margin-left: -4px;}
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Your profile page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <!-- Show profile info -->
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="well">
+                <h2><span class="fa fa-user"></span> Your profile:</h2>
+                <p>
+                    <!-- <strong>Avatar</strong>: <img src="../uploads/ef622488ec2c074c37f70a6d12e3d59d.png"/><br> -->
+                    <img src="
+                    <%- user.local.avatar ? user.local.avatar : 'uploads/default.jpg' %>
+                    " width=100% /><br>
+                    <img src="
+                    <%- user.local.img1 ? user.local.img1 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <img src="
+                    <%- user.local.img2 ? user.local.img2 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <img src="
+                    <%- user.local.img3 ? user.local.img3 : 'uploads/default.jpg' %>
+                    " width=25% />
+                    <img src="
+                    <%- user.local.img4 ? user.local.img4 : 'uploads/default.jpg' %>
+                    " width=25% /><br>
+                    <strong>Login</strong>: <%= user.local.login %><br>
+                    <strong>Email</strong>: <%= user.local.email %><br>
+                    <strong>Full Name</strong>: <%= user.local.name %><br>
+                    <strong>Gender</strong>: <%= user.local.gender %><br>
+                    <strong>Sexual preferences</strong>: <%= user.local.orient %><br>
+                    <strong>Age</strong>: <%= user.local.age %><br>
+                    <strong>Age gap</strong>: <%= user.local.agegap %><br>
+                    <strong>Interests</strong>: <%= user.local.tags %><br>  
+                    <strong>About me</strong>: <%= user.local.about %><br>
+                    <strong>You visited</strong>: 
+                    <% for (var i = 0; i < user.local.visits.length; i++) { %>
+                        <a href="/<%= user.local.visits[i] %>"><%= user.local.visits[i] %></a>
+                    <% } %> <br>
+                    <strong>You liked</strong>: 
+                    <% for (var i = 0; i < user.local.likes.length; i++) { %>
+                        <a href="/<%= user.local.likes[i] %>"><%= user.local.likes[i] %></a>
+                    <% } %> <br>
+                    <strong>Visited you</strong>: 
+                    <% for (var i = 0; i < visitors.length; i++) { %>
+                        <a href="/<%= visitors[i] %>"><%= visitors[i] %></a>
+                    <% } %> <br>
+                    <strong>Liked you</strong>: 
+                    <% for (var i = 0; i < likers.length; i++) { %>
+                        <a href="/<%= likers[i] %>"><%= likers[i] %></a>
+                    <% } %> <br>
+                    <strong>You can chat with</strong>: 
+                    <% for (var i = 0; i < user.local.likes.length; i++) { %>
+                        <% for (var j = 0; j < likers.length; j++) { %>
+                            <% if (user.local.likes[i] === likers[j]) { %>
+                                <a href="/<%= likers[j] %>"><%= likers[j] %></a>
+                            <% } %>
+                        <% } %>
+                    <% } %> <br>
+                <strong>Rating</strong>: <%= user.local.likes.length / user.local.visits.length * 100 %>%<br>
+                </p>
+            </div>
+        </div>
+
+        <!-- Change profile info -->
+        <div class="col-sm-4">
+            <div class="well">
+            <h2><span class="fa fa-user"></span> Edit Profile Info</h2>
+            <p><form action="/me" method="post">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name">
+                </div>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <input type="radio" name="gender" value="male"> Male
+                    <input type="radio" name="gender" value="female"> Female
+                </div>
+                <div class="form-group">
+                    <label>Looking for:</label>
+                    <input type="radio" name="orient" value="male"> Male
+                    <input type="radio" name="orient" value="female"> Female
+                    <input type="radio" name="orient" value="bisexual"> Bisexual
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <select name="age">
+                        <option value="-1">Select your age</option>
+                        <% for (var i = 18; i < 100; i++) { %>
+                            <option value="<%= i %> "> <%= i %> </option>;
+                        <% }; %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Age gap</label>
+                    <select name="agegap">
+                        <option value="-1">Select maximum age gap</option>
+                        <% for (var i = 0; i < 21; i++) { %>
+                            <option value="<%= i %> "> <%= i %> </option>;
+                        <% }; %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>About me</label>
+                    <textarea rows="5" cols="23" name="about"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-lg">Save changes</button>
+            </form></p>
+            <p><i>If you don't want to change any of fields, just leave it blank.</i></p>
+            
+            <h2><span class="fa fa-user"></span> Edit Images</h2>
+            <p><form action="/api/photo" enctype="multipart/form-data" method="post">
+                <p><strong>Choose avatar:</strong><input type="file" name="avatar"></p>
+                <p><strong>Select other pictures:</strong><input type="file" name="gallery" multiple></p>
+                <button type="submit" class="btn btn-warning btn-lg">Upload photos</button>
+            </form></p>
+
+            <h2><span class="fa fa-user"></span> Add Your Interests</h2>
+            <p><form action="/add-tag" method="post">
+                <p><strong>Input new interest here: </strong><input type="text" name="tag"></p>
+                <button type="submit" class="btn btn-warning btn-lg">Add tag</button>
+            </form></p>
+
+            <h2><span class="fa fa-user"></span> Your Geopositioning</h2>
+            <p><button onclick="getLocation()" class="btn btn-warning btn-lg">Update Location</button></p>
+            </div>
+            <script>
+                var pos;
+                function getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(showPosition);
+                        $.ajax({
+                            type: "POST",
+                            url: "/position",
+                            data: JSON.stringify({pos: pos}),
+                            dataType: "json",
+                            contentType: "application/json",
+                        });
+                    } else {
+                        getLocation();
+                    }
+                }
+                function showPosition(position) {
+                    pos = position.coords.latitude + ", " + position.coords.longitude; 
+                }
+            </script>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- FACEBOOK INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+
+                <!-- check if the user has this token (is the user authenticated with this social account) -->
+                <% if (user.facebook.token) { %>
+                    <p>
+                        <strong>id</strong>: <%= user.facebook.id %><br>
+                        <strong>token</strong>: <%= user.facebook.token %><br>
+                        <strong>email</strong>: <%= user.facebook.email %><br>
+                        <strong>name</strong>: <%= user.facebook.name %><br>
+                    </p>
+
+                    <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
+                <% } else { %>
+                    <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                <% } %>
+
+            </div>
+        </div>
+
+        <!-- GOOGLE INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-danger"><span class="fa fa-google-plus"></span> Google+</h3>
+
+                <% if (user.google.token) { %>
+                    <p>
+                        <strong>id</strong>: <%= user.google.id %><br>
+                        <strong>token</strong>: <%= user.google.token %><br>
+                        <strong>email</strong>: <%= user.google.email %><br>
+                        <strong>name</strong>: <%= user.google.name %>
+                    </p>
+
+                    <a href="/unlink/google" class="btn btn-danger">Unlink</a>
+                <% } else { %>
+                    <a href="/connect/google" class="btn btn-danger">Connect Google</a>
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <p><i>42 School | <b>Matcha</b> Project by <b>astepovy</b> &copy; 2017</i></p>
+    </div>
+
+</div>
+</body>
+</html>

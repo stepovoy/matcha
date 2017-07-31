@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body         { /*padding-top:80px;*/ word-wrap:break-word; }
+        .well        { overflow:  }
+        img          { padding: 1px; margin-left: -4px;}
+        #chat        { width: 100%; }
+        #time        { float: right; font-size: 10px;}
+        #message     { margin-left: 0; order: 2; }
+
+      /** { margin: 0; padding: 0; box-sizing: border-box; }*/
+      /*body { font: 13px Helvetica, Arial; }*/
+      /*form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }*/
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; display: flex; }
+      /*#messages li:nth-child(odd) { background: #eee; }*/
+      #messages { margin-bottom: 40px }
+    </style>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Chat</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <!-- Show profile info -->
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="well">
+                <h2><span class="fa fa-user"></span> Chat with <%= person.local.name %>:</h2>
+                    <!-- Chat goes here... -->
+                    <ul id="messages">
+                    <% for (var i = 0; i < chats.length; i++) { %>
+                          <% if (chats[i]) { %>
+                              <!-- <span id="from"><%= chats[i].sender === user.local.login ? "You wrote" : person.local.name + " wrote" %></span> -->
+                              <span id="time"> at <%= chats[i].createdAt.getHours() < 10 ? "0" + chats[i].createdAt.getHours() : chats[i].createdAt.getHours() %>:<%= chats[i].createdAt.getMinutes() < 10 ? "0" + chats[i].createdAt.getMinutes() : chats[i].createdAt.getMinutes() %>:<%= chats[i].createdAt.getSeconds() < 10 ? "0" + chats[i].createdAt.getSeconds() : chats[i].createdAt.getSeconds() %>
+                              <!-- on <%= chats[i].createdAt.toDateString() %> -->
+                              </span>
+                              <li><span id="message" style="margin-left: <%= chats[i].sender === user.local.login ? 'auto' : '0' %>" ><%= chats[i].message %></span>
+                              </li>
+                          <% } %>
+                    <% } %>
+                    </ul>
+                    <form name="msg">
+                      <input type="hidden" name="person" value="<%= person.local.login %>" />
+                      <input id="m" autocomplete="off" /><button>Send</button>
+                    </form>
+                    <script src="/socket.io/socket.io.js"></script>
+                    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+                    <script>
+                      var socket = io();
+                      var msg = document.forms["msg"];
+                      var person = msg.elements[0].value;
+
+                      $('form').submit(function(){
+                          $.ajax({
+                            type: "POST",
+                            url: "/message",
+                            data: JSON.stringify({
+                              person: person,
+                              msg: $('#m').val()
+                            }),
+                            dataType: "json",
+                            contentType: "application/json",
+                          });
+                        socket.emit('chat message', $('#m').val());
+
+                        $('#m').val('');
+                        return false;
+                      });
+                      socket.on('your message', function(msg){
+                        if (msg !== '') {
+                          $('#messages').append($('<li>').append($('<span>').attr("id", "time").text('just now')).append($('<span>').text(msg).css("margin-left", "auto")));
+                        }
+                      });
+                      socket.on('chat message', function(msg){
+                        if (msg !== '') {
+                          $('#messages').append($('<li>').append($('<span>').attr("id", "time").text('just now')).append($('<span>').text(msg).css("margin-left", "10px")));
+                        }
+                      });
+                    </script>
+            </div>
+        </div>
+        
+        <div class="col-sm-4">
+            <div class="well">
+                <h3><span class="fa fa-user"></span> About <%= person.local.name %>:</h3>
+                <strong>Login</strong>: <%= person.local.login %><br>
+                <strong>Full Name</strong>: <%= person.local.name %><br>
+                <strong>Gender</strong>: <%= person.local.gender %><br>
+                <strong>Sexual preferences</strong>: <%= person.local.orient %><br>
+                <strong>Age</strong>: <%= person.local.age %><br>
+                <strong>Age gap</strong>: <%= person.local.agegap %><br>
+                <strong>Interests</strong>: <%= person.local.tags %><br>  
+                <strong>About me</strong>: <%= person.local.about %><br>
+                <strong>Rating</strong>: <%= person.local.rating %><br>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <p><i>42 School | <b>Matcha</b> Project by <b>astepovy</b> &copy; 2017</i></p>
+    </div>
+
+</div>
+</body>
+</html>

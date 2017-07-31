@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body         { /*padding-top:80px;*/ word-wrap:break-word; }
+        /*img          { padding: 1px; margin-left: -4px;}*/
+        #chat        { width: 100%; }
+        #people { list-style-type: none; margin: 0; padding: 0; display: table; align-items: center; }
+        #single-person { padding: 5px 10px; /*height: 190px;*/ float: left; }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Searching Page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <!-- Show search tools and output -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="well">
+                <h2><span class="fa fa-user"></span> Searching Page</h2>
+                    <div id="people">
+                    <% for (var i = 0; i < people.length; i++) { %>
+                          <% if (people[i]) { %>
+                              <div id="single-person"><a href="http://localhost:8080/<%= people[i].local.login %>"><img src="<%= people[i].local.avatar %>" width=150 height=150 /><p id="person"><%= people[i].local.login %></p></a>
+                              </div>
+                          <% } %>
+                    <% } %>
+                    </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="text-center">
+        <p><i>42 School | <b>Matcha</b> Project by <b>astepovy</b> &copy; 2017</i></p>
+    </div>
+
+</div>
+</body>
+</html>
