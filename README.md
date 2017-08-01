@@ -5,9 +5,11 @@ Matcha 42 School Project (Node.js + Express + MongoDB)
 
 # Installation:
 
-npm i(nstall)
+- clone the repository
 
-Run:
+- npm i(nstall)
+
+# Run:
 
 npm s(start)
 
